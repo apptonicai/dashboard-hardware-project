@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+data/*.db
+data/access-code.txt
+data/session-secret.txt
+.tunnel-url

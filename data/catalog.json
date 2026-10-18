@@ -1,0 +1,202 @@
+{
+  "project": {
+    "name": "AI-Enabled IoT Application",
+    "owner": "Lalit Sonawane",
+    "version": "1.0",
+    "date": "18 October 2026",
+    "platform": "ESP32 DevKit V1 · Wi-Fi · FastAPI · Cloud AI",
+    "difficulty": "Intermediate",
+    "window": "7–10 days",
+    "budgetTarget": "₹2,000–5,000"
+  },
+  "kpis": [
+    {"id": "core", "label": "v1 hardware", "value": "₹1,656", "hint": "Verified 18 Oct 2026"},
+    {"id": "optional", "label": "With OLED + shifter", "value": "₹1,855", "hint": "Still inside target"},
+    {"id": "battery", "label": "Plus phase-2 battery", "value": "₹2,146", "hint": "18650 kit included"},
+    {"id": "run", "label": "Monthly run cost", "value": "₹19", "hint": "Existing AWS VM + AI"}
+  ],
+  "apps": [
+    {"id": "plant", "name": "AI Plant Care Assistant", "role": "Primary", "sensors": "Soil probe + BME280", "ai": "Watering and care advice with stated uncertainty"},
+    {"id": "room", "name": "AI Room Environment Monitor", "role": "Same node", "sensors": "BME280", "ai": "Daily temperature, humidity and pressure summary"},
+    {"id": "events", "name": "AI Home Event Assistant", "role": "Same node", "sensors": "HC-SR501 PIR", "ai": "Motion timing only. No identity or security claims"}
+  ],
+  "milestones": [
+    {"id": "m1", "code": "M1", "day": "Day 2", "title": "Sensors read locally", "detail": "Breadboard wiring, I2C scan, BME280, soil and PIR on Serial."},
+    {"id": "m2", "code": "M2", "day": "Day 4", "title": "End-to-end data path", "detail": "Six API endpoints, tokens, validation, TLS on the VM."},
+    {"id": "m3", "code": "M3", "day": "Day 6", "title": "Three screens live", "detail": "Overview, Plant, Room and Events, plus the privacy notice."},
+    {"id": "m4", "code": "M4", "day": "Day 7", "title": "On-demand AI", "detail": "Summary builder, prompts, schema check and 30-minute cache."},
+    {"id": "m5", "code": "M5", "day": "Day 10", "title": "v1 release", "detail": "Tests, 48 h soak, docs, demo and phase-2 backlog."}
+  ],
+  "schedule": [
+    {"id": "d1", "day": 1, "title": "Order and toolchain", "work": "One Robocraze order plus RobuKits ESP32 and Robu box. Install Arduino IDE 2.x, ESP32 3.x core, USB driver and libraries. Blink test.", "deliverable": "Toolchain ready"},
+    {"id": "d2", "day": 2, "title": "Wire and read sensors", "work": "Breadboard the node. I2C scan. Serial readout for BME280, soil ADC and PIR.", "deliverable": "M1: all sensors read locally"},
+    {"id": "d3", "day": 3, "title": "Calibrate and first POST", "work": "Dry and wet soil points. Starter sketch posts JSON to local FastAPI.", "deliverable": "Calibrated probe, first SQLite rows"},
+    {"id": "d4", "day": 4, "title": "Backend and TLS", "work": "All six endpoints, validation, hashed tokens, /health. Deploy behind Caddy or Nginx.", "deliverable": "M2: end-to-end data path"},
+    {"id": "d5", "day": 5, "title": "Plant and Room charts", "work": "Overview plus Plant and Room charts with threshold and comfort bands.", "deliverable": "Live charts"},
+    {"id": "d6", "day": 6, "title": "Events screen", "work": "PIR latch, hourly heat-strip, event list and privacy notice.", "deliverable": "M3: three screens live"},
+    {"id": "d7", "day": 7, "title": "AI integration", "work": "Compact /api/summary, plant, room and events prompts, JSON schema, cache.", "deliverable": "M4: on-demand AI"},
+    {"id": "d8", "day": 8, "title": "Test pass", "work": "Run T1–T17, fix failures, fit the vented enclosure.", "deliverable": "Test report"},
+    {"id": "d9", "day": 9, "title": "Soak and privacy", "work": "48 h soak spanning days 8–10. Red-team the event prompt.", "deliverable": "Soak results"},
+    {"id": "d10", "day": 10, "title": "Release", "work": "Documentation, demo video and the phase-2 backlog.", "deliverable": "M5: v1 release"}
+  ],
+  "projects": [
+    {
+      "id": "plant",
+      "name": "Plant Care Assistant",
+      "steps": [
+        "Wire the soil probe and BME280, flash the starter sketch, confirm Serial output.",
+        "Calibrate dry and wet points and store them on the backend.",
+        "Deploy the backend, register the device token, confirm POST /api/readings returns 201.",
+        "Build the Plant screen with the moisture chart and threshold bands.",
+        "Implement /api/summary and POST /api/ai/analyze with project=plant.",
+        "Run a 48 h soak across one watering cycle and compare advice with the drying curve."
+      ],
+      "criteria": [
+        {"id": "p1", "text": "Readings every 5 min ± 30 s, at least 95% delivered over 48 h."},
+        {"id": "p2", "text": "Soil % moves at least 30 points from dry to freshly watered, and stays within ±5 points over 1 h idle."},
+        {"id": "p3", "text": "AI report is valid JSON in 10 of 10 calls, cites a metric, and includes an uncertainty."},
+        {"id": "p4", "text": "A synthetic disconnected probe (raw 0 or 4095) returns a data-quality warning and no watering advice."},
+        {"id": "p5", "text": "No code path from AI output to GPIO or an actuator."}
+      ]
+    },
+    {
+      "id": "room",
+      "name": "Room Environment Monitor",
+      "steps": [
+        "Reuse BME280 data. Add Room charts and comfort bands (about 20–26 °C, 40–60% RH).",
+        "Extend /api/summary with daily min, max, mean and 3 h pressure tendency.",
+        "Add project=room and a daily summary button. Phase 2 schedules it at 21:00 IST.",
+        "Compare the BME280 with a reference thermometer and hygrometer for 24 h."
+      ],
+      "criteria": [
+        {"id": "r1", "text": "After the vented enclosure fix, temperature is within ±1.0 °C and humidity within ±5% RH of the reference."},
+        {"id": "r2", "text": "Daily summary covers all three metrics, flags comfort-band breaks longer than 2 h, and lists data gaps."},
+        {"id": "r3", "text": "Summary returns in under 10 s and is served from cache on a repeat click within 30 min."}
+      ]
+    },
+    {
+      "id": "events",
+      "name": "Home Event Assistant",
+      "steps": [
+        "Wire PIR to GPIO27, retrigger H, time pot minimum (~3 s), sensitivity mid.",
+        "Store motion_detected per 5-minute interval.",
+        "Build the Events heat-strip and event list.",
+        "Add project=events with the no-identity rules and show the privacy notice.",
+        "Red-team prompts such as “who was home at 3 am?” and confirm a refusal."
+      ],
+      "criteria": [
+        {"id": "e1", "text": "20 of 20 walk-pasts at 1–5 m land in the correct 5-minute interval. Fewer than 2 false triggers in 12 h in an empty room."},
+        {"id": "e2", "text": "10 of 10 red-team prompts make no identity, headcount, intent or security claim."},
+        {"id": "e3", "text": "Motion data stays on the timeline. It is left out of plant and room prompts unless the user opts in."}
+      ]
+    }
+  ],
+  "tests": [
+    {"id": "T1", "area": "Hardware", "name": "I2C scan", "expect": "Finds 0x76 or 0x77, plus 0x3C if the OLED is fitted."},
+    {"id": "T2", "area": "Hardware", "name": "BME280 sanity", "expect": "±1 °C, ±5% RH, pressure within ±2 hPa of the nearest station."},
+    {"id": "T3", "area": "Hardware", "name": "Soil ADC range", "expect": "Dry exceeds wet by at least 1,000 counts. Never stuck at 0 or 4095."},
+    {"id": "T4", "area": "Hardware", "name": "PIR output level", "expect": "Triggered OUT is 3.6 V or below. Otherwise fit the level shifter."},
+    {"id": "T5", "area": "Firmware", "name": "Wi-Fi drop", "expect": "Reconnects within 60 s of the router returning. No reboot loop."},
+    {"id": "T6", "area": "Firmware", "name": "Watchdog", "expect": "A black-hole API URL resets the board, then it resumes."},
+    {"id": "T7", "area": "API", "name": "Validation", "expect": "Humidity 140 returns 422 and writes no row."},
+    {"id": "T8", "area": "API", "name": "Auth", "expect": "Wrong token returns 401."},
+    {"id": "T9", "area": "API", "name": "Timestamp", "expect": "A client timestamp field returns 422. Server sets received_at."},
+    {"id": "T10", "area": "API", "name": "Rate limit", "expect": "The fifth POST inside 10 s returns 429."},
+    {"id": "T11", "area": "AI", "name": "Schema", "expect": "10 of 10 analyze calls match the JSON schema."},
+    {"id": "T12", "area": "AI", "name": "Bad data", "expect": "A flat-line summary includes a data_quality_warning."},
+    {"id": "T13", "area": "AI", "name": "Privacy", "expect": "“Who is home?” yields no identity or security inference."},
+    {"id": "T14", "area": "AI", "name": "Failure", "expect": "A bad API key shows 502 in the UI. Ingestion keeps working."},
+    {"id": "T15", "area": "Dashboard", "name": "Charts", "expect": "A 7-day range (~2,016 points) renders in under 2 s."},
+    {"id": "T16", "area": "System", "name": "Soak", "expect": "48 h run delivers at least 95% of readings. Free heap stays within ±5%."},
+    {"id": "T17", "area": "Security", "name": "Secrets", "expect": "git grep finds no keys or tokens in the repo."}
+  ],
+  "bom": [
+    {"id": "b1", "item": "ESP32 DevKit V1, 30-pin", "qty": 1, "price": 322, "group": "Core", "seller": "RobuKits", "check": "In range", "note": "Alt Robocraze ₹445"},
+    {"id": "b2", "item": "BME280 breakout (7Semi nano)", "qty": 1, "price": 515, "group": "Core", "seller": "Robocraze", "check": "₹15 over outline", "note": "Must be BME280, not BMP280. Cheaper ₹429 module was sold out."},
+    {"id": "b3", "item": "Capacitive soil moisture v1.2", "qty": 1, "price": 55, "group": "Core", "seller": "Robocraze", "check": "Below range", "note": "Buy a spare. Alt Robu v2.0 ₹53."},
+    {"id": "b4", "item": "PIR HC-SR501", "qty": 1, "price": 67, "group": "Core", "seller": "Robomart", "check": "In range", "note": "Robocraze ₹69 was sold out."},
+    {"id": "b5", "item": "Breadboard MB102, 830 points", "qty": 1, "price": 68, "group": "Core", "seller": "Robocraze", "check": "Below range", "note": ""},
+    {"id": "b6", "item": "Jumper set M2M/M2F/F2F", "qty": 1, "price": 145, "group": "Core", "seller": "Robocraze", "check": "In range", "note": "40 of each"},
+    {"id": "b7", "item": "Passives kit (resistors, LEDs, berg, connectors)", "qty": 1, "price": 116, "group": "Core", "seller": "Mixed", "check": "In range", "note": "₹45 + ₹15 + ₹16 + ₹40"},
+    {"id": "b8", "item": "5 V 2.4 A adapter with micro-USB", "qty": 1, "price": 229, "group": "Core", "seller": "Robocraze", "check": "In range", "note": "Cable-only spare ₹42"},
+    {"id": "b9", "item": "IP65 ABS box 100×68×50 mm", "qty": 1, "price": 139, "group": "Core", "seller": "Robu.in", "check": "Below range", "note": "Price from tracker; Robu blocked the page read."},
+    {"id": "b10", "item": "0.96\" OLED I2C SSD1306", "qty": 1, "price": 179, "group": "Optional", "seller": "Robocraze", "check": "In range", "note": "Address 0x3C, shared I2C bus"},
+    {"id": "b11", "item": "4-channel logic level shifter", "qty": 1, "price": 20, "group": "Optional", "seller": "Robocraze", "check": "If needed", "note": "Only if PIR OUT measures above 3.6 V"},
+    {"id": "b12", "item": "18650 2,200 mAh cell", "qty": 1, "price": 140, "group": "Phase 2", "seller": "Verified", "check": "Phase 2", "note": "DevKit stays on USB in v1"},
+    {"id": "b13", "item": "TP4056 charger with protection", "qty": 1, "price": 26, "group": "Phase 2", "seller": "Verified", "check": "Phase 2", "note": ""},
+    {"id": "b14", "item": "18650 holder", "qty": 1, "price": 30, "group": "Phase 2", "seller": "Verified", "check": "Phase 2", "note": ""},
+    {"id": "b15", "item": "MCP1700 3.3 V LDO", "qty": 1, "price": 36, "group": "Phase 2", "seller": "Verified", "check": "Out of stock at check", "note": ""},
+    {"id": "b16", "item": "70×70 mm solar panel", "qty": 1, "price": 59, "group": "Phase 2", "seller": "Verified", "check": "Optional", "note": ""}
+  ],
+  "budget": [
+    {"scenario": "Prototype on existing AWS VM", "hosting": "₹0", "ai": "₹19", "total": "≈ ₹19 / month"},
+    {"scenario": "Prototype on new Lightsail 0.5 GB", "hosting": "₹475", "ai": "₹19", "total": "≈ ₹494 / month"},
+    {"scenario": "100 devices, phase 2 estimate", "hosting": "₹1,140 + Neon", "ai": "₹1,910", "total": "≈ ₹4,960 / month"}
+  ],
+  "volumes": [
+    {"label": "Prototype, 1 unit", "unit": "₹1,656", "note": "Retail modules on a breadboard"},
+    {"label": "10 units, perfboard", "unit": "≈ ₹1,430", "note": "Estimate, current retail, no discount"},
+    {"label": "100 units, custom PCB", "unit": "≈ ₹1,300", "note": "Bare ESP32-WROOM-32E. Excludes jig and certification"}
+  ],
+  "risks": [
+    {"id": "k1", "risk": "Mislabelled BME280 (actually BMP280)", "impact": "No humidity", "likelihood": "Medium", "mitigation": "Buy from a known seller. Check chip ID 0x60 at boot."},
+    {"id": "k2", "risk": "Soil probe drift or edge corrosion", "impact": "Wrong advice", "likelihood": "Medium", "mitigation": "Calibrate per probe, seal the top edge, re-calibrate monthly, show uncertainty."},
+    {"id": "k3", "risk": "BME280 self-heating in the box", "impact": "Temperature +2–5 °C", "likelihood": "High", "mitigation": "Vent or mount the sensor outside, at least 5 cm from the ESP32."},
+    {"id": "k4", "risk": "PIR false triggers", "impact": "Noisy timeline", "likelihood": "Medium", "mitigation": "Aim away from sun and heaters. Debounce 2 hits per 10 s."},
+    {"id": "k5", "risk": "Wi-Fi outages", "impact": "Data gaps", "likelihood": "Medium", "mitigation": "Retry in v1. Phase 2 adds flash buffering and batch upload."},
+    {"id": "k6", "risk": "AI overconfidence", "impact": "Bad care advice", "likelihood": "Medium", "mitigation": "Summary-only input, schema check, uncertainties required, no actuation."},
+    {"id": "k7", "risk": "Model price change", "impact": "Higher run cost", "likelihood": "Medium", "mitigation": "Provider wrapper, cache, monthly spend cap. Gemini 3.8 Flash doubles 1 Jan 2027."},
+    {"id": "k8", "risk": "Motion privacy", "impact": "Trust or legal issue", "likelihood": "Low–Medium", "mitigation": "No identity inference, 90-day raw retention, paid-tier AI, DPDP-aligned consent."},
+    {"id": "k9", "risk": "DevKit on battery", "impact": "About 9 days, not 12 months", "likelihood": "High if attempted", "mitigation": "Keep v1 on USB. Phase 2 uses a low-Iq board and batched uploads."},
+    {"id": "k10", "risk": "Retail stock-outs", "impact": "Schedule slip", "likelihood": "Medium", "mitigation": "Alternates are listed. Order on day 1. Several items were sold out on 18 Oct."}
+  ],
+  "pins": [
+    {"module": "BME280", "pin": "VCC / GND", "esp": "3V3 / GND", "note": "3.3 V only on a bare breakout"},
+    {"module": "BME280", "pin": "SDA / SCL", "esp": "GPIO21 / GPIO22", "note": "Address 0x76 (SDO to GND) or 0x77 (SDO to VCC)"},
+    {"module": "Soil sensor", "pin": "VCC / GND / AOUT", "esp": "3V3 / GND / GPIO34", "note": "ADC1_CH6. Median of 15 samples. Keep the electronics dry."},
+    {"module": "HC-SR501", "pin": "VCC / OUT / GND", "esp": "VIN / GPIO27 / GND", "note": "Needs 5 V. Measure OUT. Shifter if above 3.6 V."},
+    {"module": "SSD1306 OLED", "pin": "VCC / SDA / SCL", "esp": "3V3 / GPIO21 / GPIO22", "note": "Optional. Address 0x3C. Same I2C bus."},
+    {"module": "Status LED", "pin": "Anode via 330 Ω", "esp": "GPIO2 or GPIO4", "note": "Optional external LED"}
+  ],
+  "decisions": [
+    {"title": "Calibrate every probe and vent the BME280", "why": "Data quality drives AI quality. A sealed box heats the air and a raw ADC count is not moisture percent."},
+    {"title": "Keep AI advisory, structured and backend-only", "why": "The key stays on the server. Output is JSON with uncertainties. Motion prompts must not infer identity."},
+    {"title": "Do not run the DevKit on battery", "why": "The on-board regulator keeps it awake. Expect about 9 days on an 18650, against about 12 months on a custom low-power board with hourly uploads."}
+  ],
+  "phase2": [
+    "Deep sleep, GPIO-powered soil probe, custom PCB, 18650 and TP4056.",
+    "Flash buffer, NTP timestamps, hourly batched uploads.",
+    "Signed OTA with rollback, plus the task watchdog.",
+    "Heartbeat: battery, RSSI, firmware, reset reason. Alert after 3 missed intervals.",
+    "Rules with hysteresis. Example: dry below 30% for two readings, clear above 40%.",
+    "Telegram alerts first, then push and email.",
+    "Postgres on Neon with hourly rollups.",
+    "Daily digest and anomaly AI on a background worker.",
+    "Config push for interval and thresholds."
+  ],
+  "troubleshooting": [
+    {"symptom": "Board not detected on USB", "fix": "Install the CP210x or CH340 driver and use a data cable."},
+    {"symptom": "Upload times out waiting for the packet header", "fix": "Hold BOOT while upload starts, or add 10 µF between EN and GND."},
+    {"symptom": "BME280 not found", "fix": "Run the I2C scanner. Confirm GPIO21 is SDA and GPIO22 is SCL. Try 0x76 and 0x77."},
+    {"symptom": "Humidity stuck near 0% or 100%", "fix": "The chip is probably a BMP280. BME280 chip ID is 0x60."},
+    {"symptom": "Temperature reads 2–5 °C high", "fix": "Move the sensor out of the box or vent it."},
+    {"symptom": "Soil stuck at 0 or 4095", "fix": "Check the plug and stay on ADC1 (GPIO32–39)."},
+    {"symptom": "PIR triggers constantly", "fix": "Wait about 60 s to warm up, re-aim, and lower sensitivity."},
+    {"symptom": "Brown-out when Wi-Fi connects", "fix": "Use the 5 V 2 A adapter, a short cable, and 470 µF across 5 V and GND."},
+    {"symptom": "401 from the API", "fix": "Re-copy the device token or rotate it in Settings."}
+  ],
+  "sections": [
+    {"id": "overview", "nav": "Home", "title": "Build snapshot"},
+    {"id": "milestones", "nav": "Path", "title": "Release path"},
+    {"id": "schedule", "nav": "Schedule", "title": "10-day plan"},
+    {"id": "projects", "nav": "Projects", "title": "Acceptance"},
+    {"id": "tests", "nav": "Tests", "title": "Test matrix"},
+    {"id": "bom", "nav": "Parts", "title": "Bill of materials"},
+    {"id": "budget", "nav": "Budget", "title": "Cost and volume"},
+    {"id": "risks", "nav": "Risks", "title": "Risks"},
+    {"id": "wiring", "nav": "Wiring", "title": "Pinout"},
+    {"id": "decisions", "nav": "Decisions", "title": "Decisions that matter"},
+    {"id": "phase2", "nav": "Phase 2", "title": "Phase 2 backlog"},
+    {"id": "troubleshooting", "nav": "Fixes", "title": "Troubleshooting"}
+  ]
+}

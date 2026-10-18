@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI IoT Build Console</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div id="login" class="login hidden">
+    <form id="login-form" class="login-card">
+      <p class="eyebrow">AI IoT · Build console</p>
+      <h1>Sign in</h1>
+      <p class="muted">Use the access code from the project host. Progress is shared across browsers.</p>
+      <label for="code">Access code</label>
+      <input id="code" name="code" type="password" autocomplete="current-password" required>
+      <p id="login-error" class="form-error" role="alert"></p>
+      <button class="btn btn-brand" type="submit">Log in</button>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <header class="global">
+      <button id="nav-toggle" class="icon-btn" type="button" aria-label="Open navigation">Menu</button>
+      <div class="brand">
+        <span class="mark">IoT</span>
+        <div>
+          <strong>AI IoT Build Console</strong>
+          <span>Plant care · Room · Events</span>
+        </div>
+      </div>
+      <label class="search">
+        <span class="sr">Search the console</span>
+        <input id="search" type="search" placeholder="Search schedule, parts, tests…">
+      </label>
+      <div class="global-meta">
+        <span id="save-state" class="save-state">Saved</span>
+        <button id="logout" class="btn btn-inverse" type="button">Log out</button>
+      </div>
+    </header>
+
+    <div class="shell">
+      <nav id="sidenav" class="sidenav" aria-label="Sections"></nav>
+      <main id="main" class="main"></main>
+    </div>
+
+    <footer class="utility">
+      <button id="open-builder" class="util-btn" type="button">Edit page</button>
+      <button id="jump-notes" class="util-btn" type="button">Build notes</button>
+      <span id="progress-label" class="util-meta"></span>
+    </footer>
+  </div>
+
+  <aside id="builder" class="drawer hidden" aria-label="Page layout">
+    <div class="drawer-head">
+      <div>
+        <p class="eyebrow">Page layout</p>
+        <h2>Sections</h2>
+      </div>
+      <button id="close-builder" class="icon-btn" type="button" aria-label="Close">Close</button>
+    </div>
+    <p class="muted">Show, hide, or reorder sections. Custom sections stay with the shared project record.</p>
+    <ul id="builder-list" class="builder-list"></ul>
+    <form id="custom-form" class="custom-form">
+      <h3>Add a section</h3>
+      <label for="custom-title">Title</label>
+      <input id="custom-title" maxlength="80" required placeholder="Bench notes">
+      <label for="custom-body">Notes</label>
+      <textarea id="custom-body" maxlength="4000" rows="4" placeholder="What this section should track"></textarea>
+      <button class="btn btn-brand" type="submit">Add section</button>
+    </form>
+  </aside>
+  <div id="scrim" class="scrim hidden"></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
